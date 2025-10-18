@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { MapPin } from "lucide-react";
 import { Button, HStack, Text, Spinner } from "@chakra-ui/react";
 
-export default function Location() {
+export default function Location({ onLocationFound }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [locationLabel, setLocationLabel] = useState(null);
@@ -22,10 +22,10 @@ export default function Location() {
       const a = data.address || {};
       const city = a.city || a.town || a.village || "";
       const state = a.state || "";
-      return city && state ? `${city}, ${state}` : state || city || "Unknown";
+      return { city, state };
     } catch (e) {
       console.error("Reverse lookup failed:", e);
-      return "Unknown";
+      return { city: "Unknown", state: "" };
     }
   }
 
@@ -33,9 +33,14 @@ export default function Location() {
     try {
       const res = await fetch("https://ipapi.co/json/");
       const data = await res.json();
-      return `${data.city}, ${data.region}`;
+      return {
+        city: data.city || "Unknown",
+        state: data.region || "",
+        latitude: data.latitude,
+        longitude: data.longitude,
+      };
     } catch {
-      return "Unknown";
+      return { city: "Unknown", state: "", latitude: null, longitude: null };
     }
   }
 
@@ -54,17 +59,20 @@ export default function Location() {
 
     const success = async ({ coords }) => {
       done = true;
-      const label = await reverseLookup(coords.latitude, coords.longitude);
+      const { city, state } = await reverseLookup(coords.latitude, coords.longitude);
+      const label = `${city}, ${state}`;
       setLocationLabel(label);
+      onLocationFound?.({ city, state, latitude: coords.latitude, longitude: coords.longitude });
       setLoading(false);
     };
 
     const fail = async (err) => {
       console.warn("Geo error:", err);
       if (err.code === 3) {
-        // timeout → fallback
-        const label = await fallbackByIP();
-        setLocationLabel(label + " (approx)");
+        const f = await fallbackByIP();
+        const label = `${f.city}, ${f.state} (approx)`;
+        setLocationLabel(label);
+        onLocationFound?.(f);
       } else if (err.code === 1) {
         setError("Permission denied. Enable location access.");
       } else {
@@ -74,16 +82,18 @@ export default function Location() {
     };
 
     navigator.geolocation.getCurrentPosition(success, fail, {
-      enableHighAccuracy: false, // allow coarse network location
-      timeout: 60000,            // 60 seconds
+      enableHighAccuracy: false,
+      timeout: 60000,
       maximumAge: 0,
     });
 
-    // Safety fallback: if still not resolved after 70s, use IP
+    // fallback if not resolved after 70s
     setTimeout(async () => {
       if (!done) {
-        const label = await fallbackByIP();
-        setLocationLabel(label + " (approx)");
+        const f = await fallbackByIP();
+        const label = `${f.city}, ${f.state} (approx)`;
+        setLocationLabel(label);
+        onLocationFound?.(f);
         setLoading(false);
       }
     }, 70000);
@@ -92,7 +102,6 @@ export default function Location() {
   return (
     <div className="flex flex-col items-center gap-2 mt-8">
       <Button
-        type="submit"
         colorScheme="green"
         fontFamily="'Fustat', sans-serif"
         onClick={getLocation}
@@ -124,7 +133,7 @@ export default function Location() {
 
       {locationLabel && (
         <Text mt={2} fontFamily="'Fustat', sans-serif" color="green.800">
-          📍{locationLabel}
+          📍 {locationLabel}
         </Text>
       )}
     </div>
