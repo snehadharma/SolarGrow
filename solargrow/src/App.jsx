@@ -11,6 +11,8 @@ import Header from './components/Header'
 import { baseTheme } from '@chakra-ui/theme'
 import { Provider } from '@chakra-ui/react/provider'
 import Account from './components/Account'
+import AddPlant from './components/AddPlant'
+import MyGardens from './components/MyGardens'
 
 function App() {
   const [session, setSession] = useState(null)
@@ -44,7 +46,8 @@ function App() {
           <Route path="/home" element={<Home />} />
           <Route path="/account" element={<Account />} />
           <Route path="/location" element={<Location />} />
-          {/* <Route path="/account" element={<Account />} /> */}
+          <Route path="/mygarden" element={<MyGardens />} />
+          <Route path="/addplant" element={<AddPlant />} />
         </Routes>
       </Router>
     </Provider>
