@@ -24,7 +24,6 @@ function LogIn() {
     if (error) {
       setError(error.message)
     } else {
-      // Redirect to dashboard or home after successful login
       navigate('/dashboard')
     }
   }

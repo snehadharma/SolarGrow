@@ -6,6 +6,8 @@ import LogIn from './components/LogIn'
 import SignUp from './components/SignUp'
 import Home from './components/Home'
 import Dashboard from './components/Dashboard'
+import Location from './components/Location'
+import Header from './components/Header'
 import { baseTheme } from '@chakra-ui/theme'
 import { Provider } from '@chakra-ui/react/provider'
 
@@ -13,46 +15,32 @@ function App() {
   const [session, setSession] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  // useEffect(() => {
-  //   supabase.auth.getSession().then(({ data: { session } }) => {
-  //     setSession(session)
-  //     setLoading(false)
-  //   })
+  useEffect(() => {
+    // Check for an existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session)
+    })
 
-  //   const {
-  //     data: { subscription },
-  //   } = supabase.auth.onAuthStateChange((_event, session) => {
-  //     setSession(session)
-  //   })
+    // Listen for login/logout changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session)
+    })
 
-  //   return () => subscription.unsubscribe()
-  // }, [])
-
-  // // Show loading state while checking auth
-  // if (loading) {
-  //   return <div>Loading...</div>
-  // }
+    return () => subscription.unsubscribe()
+  }, [])
 
   return (
     <Provider theme={baseTheme}>
       <Router>
+        <Header />
         <Routes>
-          {!session && (
-            <>
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<LogIn />} />
-              {/* <Route path="/signup" element={<SignUp />} /> */}
-            </>
-          )}
-
-
-          {session && (
-            <>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="*" element={<Navigate to="/dashboard" replace />} />
-            </>
-          )}
-
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<LogIn />} />
+          <Route path="/signup" element={ <SignUp /> } />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/home" element={<Home />} />
         </Routes>
       </Router>
     </Provider>
