@@ -6,6 +6,7 @@ import LogIn from './components/LogIn'
 import SignUp from './components/SignUp'
 import Dashboard from './components/Dashboard'
 import Home from './components/Home'
+import Location from './components/Location'
 
 function App() {
   const [session, setSession] = useState(null)
@@ -39,6 +40,7 @@ function App() {
         <Route path="/signup" element={ <SignUp /> } />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/home" element={<Home />} />
+        <Route path="/location" element={<Location />} />
       </Routes>
     </Router>
   )
