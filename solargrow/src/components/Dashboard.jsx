@@ -18,6 +18,8 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import { Sun, Droplets, CloudRain } from "lucide-react";
+import SunPathCard from "./SunPathCard";
+import Animation1 from "./Animation1";
 
 export default function Dashboard() {
   const cardBg = useColorModeValue("white", "gray.800");
@@ -40,6 +42,7 @@ export default function Dashboard() {
       justifyContent="center"
     >
 
+<Animation1>
       {/* Decorative background blobs (absolutely positioned to this Box) */}
       <Box
         position="absolute"
@@ -88,28 +91,8 @@ export default function Dashboard() {
             {/* Sun Path */}
             <Card bg={cardBg} borderRadius={cardRadius} boxShadow="sm" mb={6} p={6}>
               <CardBody>
-                <Heading size="sm" mb={4} color="gray.800">
-                  Sun Path
-                </Heading>
-
-                {/* Track */}
-                <Box bg="gray.100" borderRadius="full" h="10px" position="relative" mb={3} p={6}>
-                  <Box
-                    position="absolute"
-                    left="10%"
-                    top="-12px"
-                    bg="yellow.300"
-                    borderRadius="full"
-                    h="34px"
-                    w="34px"
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    boxShadow="sm"
-                  >
-                    <Sun size={18} color="#B7791F" />
-                  </Box>
-                  <Progress value={sun.progress} size="sm" colorScheme="yellow" borderRadius="full" />
+                <Box>
+                  <SunPathCard />
                 </Box>
 
                 <HStack justify="space-between" color="gray.600" fontSize="sm">
@@ -251,6 +234,7 @@ export default function Dashboard() {
           </GridItem>
         </Grid>
       </Container>
+      </Animation1>
     </Box>
   );
 }

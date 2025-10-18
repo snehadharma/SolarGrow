@@ -99,9 +99,7 @@ export default function SunPathCard({ location }) {
 
   return (
     <Box>
-      <VStack align="start" spacing={5} 
-                align="center"
-                justify="center">
+      <VStack align="start" spacing={5} justify="center">
         <HStack>
           <Sun size={40} color="#F6B632" />
           <Heading size="md"
