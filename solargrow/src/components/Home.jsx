@@ -4,6 +4,7 @@ import {
   Container,
   Grid,
   GridItem,
+  Flex,
   HStack,
   VStack,
   Button,
@@ -86,9 +87,9 @@ export default function Home() {
             <Box
               bg="white"
               borderRadius={cardRadius}
-              p={{ base: 6, md: 8 }}
+              p={6}
               boxShadow="md"
-              height="40vh"
+              height="50vh"
             >
               <VStack align="start" spacing={4}>
                 <Text
@@ -135,24 +136,27 @@ export default function Home() {
 
           {/* ✅ Right animated Sun Path Card */}
           <GridItem colSpan={1}>
-            {coords ? (
-              <SunPathCard location={coords} />
-            ) : (
-              <Box
-                bg="white"
-                borderRadius={cardRadius}
-                p={{ base: 6, md: 8 }}
-                boxShadow="md"
-                height="40vh"
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-              >
+            <Box
+              bg="white"
+              borderRadius={cardRadius}
+              p={6}
+              boxShadow="md"
+              height="50vh"
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+            >
+              {coords ? (
+                <SunPathCard location={coords} />
+
+              ) : (
+
                 <Text color="gray.500" fontStyle="italic">
                   Click "Use My Location" to load your Sun Path
                 </Text>
-              </Box>
-            )}
+
+              )}
+            </Box>
           </GridItem>
 
           {/* Bottom section */}

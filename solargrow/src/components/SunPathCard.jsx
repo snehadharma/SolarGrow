@@ -98,16 +98,9 @@ export default function SunPathCard({ location }) {
       : "--";
 
   return (
-    <Box
-      bg="white"
-      borderRadius="20px"
-      p={8}
-      boxShadow="md"
-      height="40vh"
-      width="100%"
-    >
+    <Box>
       <VStack align="start" spacing={5}>
-        <HStack spacing={4}>
+        <HStack>
           <Sun size={40} color="#F6B632" />
           <Heading size="md" color="gray.800">
             Sun Path {location?.city ? `— ${location.city}` : ""}
