@@ -125,7 +125,7 @@ export default function Home() {
   }, [coords]);
 
   return (
-    <Box position="relative" bg="#DDEADD" minH="100vh" overflowY="auto" overflowX="hidden">
+    <Box position="relative" bg="#DDEADD" minH="100vh" overflow="hidden">
       {/* Background blobs */}
       <Box
         position="absolute"
