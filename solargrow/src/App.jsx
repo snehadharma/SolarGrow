@@ -10,6 +10,7 @@ import Location from './components/Location'
 import Header from './components/Header'
 import { baseTheme } from '@chakra-ui/theme'
 import { Provider } from '@chakra-ui/react/provider'
+import Account from './components/Account'
 
 function App() {
   const [session, setSession] = useState(null)
@@ -41,6 +42,9 @@ function App() {
           <Route path="/signup" element={ <SignUp /> } />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/home" element={<Home />} />
+          <Route path="/account" element={<Account />} />
+          <Route path="/location" element={<Location />} />
+          {/* <Route path="/account" element={<Account />} /> */}
         </Routes>
       </Router>
     </Provider>
