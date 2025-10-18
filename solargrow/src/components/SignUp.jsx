@@ -29,7 +29,6 @@ function SignUp() {
   const [loading, setLoading] = useState(false)
   const [city, setCity] = useState('')
   const [state, setState] = useState('')
-  // (city/state can be added later if needed)
 
   const handleSignUp = async (e) => {
     e.preventDefault()
@@ -37,36 +36,62 @@ function SignUp() {
     setMessage('')
     setLoading(true)
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: {
           first_name: firstName,
           last_name: lastName,
-          city, 
-          state, 
+          city: city,
+          state: state,
         },
       },
-    })
+    });
 
-    if (error) {
-      setError(error.message)
-    } else {
-      setMessage('Check your email for a confirmation link!')
+    if (signUpError) {
+      setError(signUpError.message);
+      setLoading(false);
+      return;
     }
-    setLoading(false)
+
+    const user = data?.user;
+    if (!user) {
+      setError("User signup failed — please try again.");
+      setLoading(false);
+      return;
+    }
+
+    const { error: insertError } = await supabase.from("profiles").insert([
+      {
+        id: user.id, // Auth user UUID
+        first_name: firstName,
+        last_name: lastName,
+        city: city,
+        state: state,
+      },
+    ]);
+
+    if (insertError) {
+      console.error("Error inserting into profiles:", insertError);
+      setError("Failed to save user profile: " + insertError.message);
+      setLoading(false);
+      return;
+    }
+
+    // added authetication and profiles table 
+    setMessage("✅ Sign-up successful!");
+    setLoading(false);
   }
 
   const handleLocationUpdate = (location) => {
-    const [city, state] = location.split(', ');
-    setCity(city);
-    setState(state);
+    setCity(location.city || "");
+    setState(location.state || "");
   };
 
   return (
     <Box position="relative" minH="100vh" display="flex" flexDirection="column" bg="#DDEADD" overflow="hidden">
-      {/* Decorative background blobs (absolutely positioned to this Box) */}
+      {/* Decorative background blobs */}
       <Box
         position="absolute"
         left="-120px"
@@ -185,7 +210,7 @@ function SignUp() {
                       />
                     </FormControl>
 
-                  <Location onLocationUpdate={handleLocationUpdate}/>
+                  <Location onLocationFound={handleLocationUpdate}/>
 
                   <Button
                     type="submit"
