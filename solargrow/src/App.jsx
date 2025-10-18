@@ -10,10 +10,11 @@ import Location from './components/Location'
 import Header from './components/Header'
 import { baseTheme } from '@chakra-ui/theme'
 import { Provider } from '@chakra-ui/react/provider'
-import Account from './components/Account'
+import Account from './components/Profile'
 import AddPlant from './components/AddPlant'
 import MyGardens from './components/MyGardens'
 import Background from './components/Background' 
+import Profile from './components/Profile'
 
 function App() {
   const [session, setSession] = useState(null)
@@ -50,6 +51,7 @@ function App() {
           <Route path="/location" element={<Location />} />
           <Route path="/mygarden" element={<MyGardens />} />
           <Route path="/addplant" element={<AddPlant />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
       </Router>
     </Provider>
