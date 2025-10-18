@@ -1,10 +1,9 @@
 import './index.css'
-import './index.css'
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { supabase } from './supabaseClient'
 import LogIn from './components/LogIn'
-import SignUp from './components/SignUp'
+// import SignUp from './components/SignUp'
 import Dashboard from './components/Dashboard'
 
 function Home() {
@@ -31,9 +30,13 @@ function Home() {
 
 function App() {
   const [session, setSession] = useState(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => setSession(session))
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session)
+      setLoading(false)
+    })
 
     const {
       data: { subscription },
@@ -44,21 +47,31 @@ function App() {
     return () => subscription.unsubscribe()
   }, [])
 
+  if (loading) return null
+
   return (
     <Router>
       <Routes>
-        {!session ? (
+        {!session && (
           <>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<LogIn />} />
-            <Route path="/signup" element={<SignUp />} />
+            {/* <Route path="/signup" element={<SignUp />} /> */}
           </>
-        ) : (
-          <Route path="/dashboard" element={<Dashboard />} />
         )}
+
+
+        {session && (
+          <>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </>
+        )}
+
       </Routes>
     </Router>
   )
 }
+
 
 export default App
