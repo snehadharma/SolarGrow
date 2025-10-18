@@ -13,7 +13,12 @@ const OUTPUT_FORMAT = "JSON";
 
 app.get("/api/uv", async (req, res) => {
   try {
-    const url = `https://data.epa.gov/efservice/getEnvirofactsUVHOURLY/CITY/${CITY}/STATE/${STATE}/${OUTPUT_FORMAT}`;
+    
+    const { city, state } = req.query;
+    const queryCity = city || CITY;
+    const queryState = state || STATE;
+
+    const url = `https://data.epa.gov/efservice/getEnvirofactsUVHOURLY/CITY/${queryCity}/STATE/${queryState}/${OUTPUT_FORMAT}`;
     const response = await fetch(url);
 
     if (!response.ok) {
