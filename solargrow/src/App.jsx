@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { supabase } from './supabaseClient'
 import LogIn from './components/LogIn'
+import SignUp from './components/SignUp'
 import Home from './components/Home'
 import Dashboard from './components/Dashboard'
 import { baseTheme } from '@chakra-ui/theme'
@@ -12,22 +13,25 @@ function App() {
   const [session, setSession] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-      setLoading(false)
-    })
+  // useEffect(() => {
+  //   supabase.auth.getSession().then(({ data: { session } }) => {
+  //     setSession(session)
+  //     setLoading(false)
+  //   })
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-    })
+  //   const {
+  //     data: { subscription },
+  //   } = supabase.auth.onAuthStateChange((_event, session) => {
+  //     setSession(session)
+  //   })
 
-    return () => subscription.unsubscribe()
-  }, [])
+  //   return () => subscription.unsubscribe()
+  // }, [])
 
-  if (loading) return null
+  // // Show loading state while checking auth
+  // if (loading) {
+  //   return <div>Loading...</div>
+  // }
 
   return (
     <Provider theme={baseTheme}>
@@ -56,4 +60,4 @@ function App() {
 }
 
 
-export default App
+export default App;
