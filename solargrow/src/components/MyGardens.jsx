@@ -18,12 +18,8 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { supabase } from "../supabaseClient";
-<<<<<<< HEAD
-=======
-import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
->>>>>>> 9e1319e2f20e77527b464c0ab77cf44cf29e5a6a
 
 export default function MyGarden() {
   const [plants, setPlants] = useState([]);
@@ -239,6 +235,15 @@ export default function MyGarden() {
               }
               lastWatered={plant.lastWatered}
               onLog={() => handleOpenLog(plant)}
+              onOpen={() =>
+                    navigate(`/plant/${plant.id}`, {
+                        state: {
+                            plantId: plant.id, 
+                            userId: plant.user_id,
+                            conditionId: plant.plant_conditions_id,
+                        },
+                    })
+                }
             />
           ))}
         </SimpleGrid>

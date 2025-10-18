@@ -2,12 +2,15 @@ import { useEffect, useState } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import { Box, Text, Spinner, VStack, Button } from "@chakra-ui/react";
+// import weather from "./weather";
+// import { ClipboardType } from "lucide-react";
+import { getDailyUV } from "./utils/getDailyUV"
 
 export default function PlantSpecific() {
   const { plant_id } = useParams(); 
   const location = useLocation();
   const { plantId, userId, conditionId } = location.state || {};
-
+  const [uv, setUv] = useState(null);
   const [plant, setPlant] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -78,6 +81,11 @@ export default function PlantSpecific() {
     );
 
   const conditions = plant.plant_conditions || {};
+  
+  // plant.plantId
+  // const sunrise  = weather.sunrise;
+  // console.log(sunrise);
+
 
   console.log(plant.plant_conditions_id)
 
