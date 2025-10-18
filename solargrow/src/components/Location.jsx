@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { MapPin } from "lucide-react";
+import { Button, HStack, Text, Spinner } from "@chakra-ui/react";
 
 export default function Location() {
   const [loading, setLoading] = useState(false);
@@ -90,35 +91,42 @@ export default function Location() {
 
   return (
     <div className="flex flex-col items-center gap-2 mt-8">
-      <button
+      <Button
+        type="submit"
+        colorScheme="green"
+        fontFamily="'Fustat', sans-serif"
         onClick={getLocation}
-        disabled={loading}
-        className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-md transition text-white ${
-          loading
-            ? "bg-green-400 cursor-wait"
-            : "bg-green-600 hover:bg-green-700"
-        }`}
+        isDisabled={loading}
+        w="fit-content"
       >
         {loading ? (
-          <div className="flex items-center gap-2">
-            <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            <span>Locating...</span>
-          </div>
+          <HStack spacing={2}>
+            <Spinner size="sm" color="green.800" />
+            <Text fontFamily="'Fustat', sans-serif" color="green.800">
+              Locating...
+            </Text>
+          </HStack>
         ) : (
-          <>
-            <MapPin size={20} className="text-white animate-pulse" />
-            <span>Use My Location</span>
-          </>
+          <HStack spacing={2}>
+            <MapPin size={15} />
+            <Text fontFamily="'Fustat', sans-serif" color="green.800">
+              Use My Location
+            </Text>
+          </HStack>
         )}
-      </button>
+      </Button>
 
-      {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
-      {locationLabel && (
-        <p className="text-sm text-green-700 mt-1 font-medium">
-          📍{locationLabel}
-        </p>
+      {error && (
+        <Text fontSize="sm" color="red.500" mt={1}>
+          {error}
+        </Text>
       )}
-      {locationLabel}
+
+      {locationLabel && (
+        <Text mt={2} fontFamily="'Fustat', sans-serif" color="green.800">
+          📍{locationLabel}
+        </Text>
+      )}
     </div>
   );
 }

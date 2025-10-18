@@ -128,10 +128,17 @@ function LogIn() {
                       placeholder="Enter your password"
                     />
                   </FormControl>
+                </VStack>
 
+                <VStack spacing={5} px="2px" pt="10px">
                   <Button
                     type="submit"
-                    color="green.800"
+                    bg="#2F855A"
+                    opacity="50%"
+                    px="20px"
+                    py="3px"
+                    borderRadius="20px"
+                    color="white"
                     fontFamily="'Fustat', sans-serif"
                     isLoading={loading}
                     colorScheme="green"

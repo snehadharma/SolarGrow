@@ -189,7 +189,12 @@ function SignUp() {
 
                   <Button
                     type="submit"
-                    color="green.800"
+                    bg="#2F855A"
+                    opacity="50%"
+                    px="20px"
+                    py="3px"
+                    borderRadius="20px"
+                    color="white"
                     fontFamily="'Fustat', sans-serif"
                     isLoading={loading}
                     colorScheme="green"
