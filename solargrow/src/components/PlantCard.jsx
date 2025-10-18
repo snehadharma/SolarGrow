@@ -33,7 +33,6 @@ export default function PlantCard({
   conditions = {},
   soilType,
   datePlanted,
-  createdAt,
   lastWatered,
   onOpen,
   onLog,
@@ -74,27 +73,12 @@ export default function PlantCard({
           </Text>
         </VStack>
 
-        <HStack justify="center" spacing={3} mt={4} px={5}>
-          <Text fontSize="sm" fontWeight={700} fontFamily="'Fustat', sans-serif" color={muted} textAlign="center">
-            {[
-              conditions.uvWindow ? `High UV ${conditions.uvWindow}` : null,
-              conditions.humidity ? `Humidity ${conditions.humidity}` : null,
-              conditions.temperature ?? null,
-            ]
-              .filter(Boolean)
-              .join(" • ")}
-          </Text>
-        </HStack>
-
         <VStack spacing={1} mt={3} px={6}>
           <Text fontSize="sm" fontFamily="'Fustat', sans-serif" fontWeight={700} color={muted}>
             {soilType ? `${soilType} soil` : ""}
           </Text>
           <Text fontSize="xs" fontFamily="'Fustat', sans-serif" fontWeight={600} color={muted}>
             {datePlanted ? `Planted: ${datePlanted}` : ""}
-          </Text>
-          <Text fontSize="xs" fontFamily="'Fustat', sans-serif" fontWeight={600} color={muted}>
-            {createdAt ? `Created: ${createdAt}` : ""}
           </Text>
           {lastWatered && (
             <Text fontSize="xs" fontFamily="'Fustat', sans-serif" fontWeight={600} color={muted}>
