@@ -1,28 +1,77 @@
-import './LogIn.css';
-import { useNavigate } from 'react-router-dom'
+import { useState } from 'react'
 import { supabase } from '../supabaseClient'
-import { Auth } from '@supabase/auth-ui-react'
-
+import { useNavigate } from 'react-router-dom'
 
 function LogIn() {
-    const navigate = useNavigate()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
 
-    // optional: listen for login completion
-    supabase.auth.onAuthStateChange((event, session) => {
-        if (event === 'SIGNED_IN') {
-            navigate('/dashboard')
-        }
+  const handleLogIn = async (e) => {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
     })
 
-    return (
-    <div className="login-container">
-        <Auth
-        supabaseClient={supabase}
-        appearance={{ theme: ThemeSupa }}
-        providers={[]}
+    setLoading(false)
+
+    if (error) {
+      setError(error.message)
+    } else {
+      // Redirect to dashboard or home after successful login
+      navigate('/dashboard')
+    }
+  }
+
+  return (
+    <div>
+      <h2>Welcome Back 🌿</h2>
+
+      <form
+        onSubmit={handleLogIn}
+      >
+        <label >Email</label>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          placeholder="Enter your email"
         />
+
+        <label >Password</label>
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          placeholder="Enter your password"
+        />
+
+        <button
+          type="submit"
+          disabled={loading}
+        >
+          {loading ? 'Logging in...' : 'Log In'}
+        </button>
+
+        {error && <p >{error}</p>}
+
+        <p >
+          Don’t have an account?{' '}
+          <a href="/signup" >
+            Sign up
+          </a>
+        </p>
+      </form>
     </div>
-    )
+  )
 }
 
-export default LogIn; 
+export default LogIn
