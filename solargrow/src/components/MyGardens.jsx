@@ -18,11 +18,18 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { supabase } from "../supabaseClient";
+<<<<<<< HEAD
+=======
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
+>>>>>>> 9e1319e2f20e77527b464c0ab77cf44cf29e5a6a
 
 export default function MyGarden() {
   const [plants, setPlants] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const [selectedPlant, setSelectedPlant] = useState(null);
   const [waterAmount, setWaterAmount] = useState("");
@@ -56,6 +63,8 @@ export default function MyGarden() {
         .from("plants")
         .select(`
           id,
+          user_id,
+          plant_conditions_id,
           nickname,
           soil_type,
           date_planted,
