@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Box,
   Container,
@@ -11,13 +11,13 @@ import {
   Heading,
   Text,
   SimpleGrid,
-  Progress,
   Tag,
   TagLabel,
   Divider,
 } from "@chakra-ui/react";
 import { motion, AnimatePresence } from "framer-motion";
 import Location from "./Location";
+import SunPathCard from "./SunPathCard"; // ✅ new animated card
 
 function SunIcon(props) {
   return (
@@ -32,69 +32,12 @@ function SunIcon(props) {
 
 export default function Home() {
   const [coords, setCoords] = useState(null);
-  const [sunData, setSunData] = useState(null);
-  const [loadingSun, setLoadingSun] = useState(false);
-
   const cardRadius = "20px";
-
-  // 🌅 Fetch sunrise/sunset dynamically when coordinates update
-  useEffect(() => {
-    if (!coords?.latitude || !coords?.longitude) return;
-
-    async function fetchSunData() {
-      setLoadingSun(true);
-      try {
-        const res = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=${coords.latitude}&longitude=${coords.longitude}&daily=sunrise,sunset,uv_index_max&timezone=auto`
-        );
-        const data = await res.json();
-
-        const sunrise = new Date(data.daily.sunrise[0]);
-        const sunset = new Date(data.daily.sunset[0]);
-        const uvMax = data.daily.uv_index_max[0];
-
-        setSunData({ sunrise, sunset, uvMax });
-      } catch (err) {
-        console.error("☀️ Error fetching sun data:", err);
-      } finally {
-        setLoadingSun(false);
-      }
-    }
-
-    fetchSunData();
-  }, [coords]);
 
   // 🧭 Receive location from Location.jsx
   function handleLocation({ latitude, longitude, city, state }) {
     setCoords({ latitude, longitude, city: `${city}, ${state}` });
   }
-
-  // ⏰ Helpers
-  const formatTime = (date) =>
-    date?.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) || "--";
-
-  const currentProgress =
-    sunData && sunData.sunrise && sunData.sunset
-      ? Math.min(
-          100,
-          Math.max(
-            0,
-            ((Date.now() - sunData.sunrise.getTime()) /
-              (sunData.sunset.getTime() - sunData.sunrise.getTime())) *
-              100
-          )
-        )
-      : 0;
-
-  const peakUV = sunData
-    ? (() => {
-        const mid =
-          (sunData.sunrise.getTime() + sunData.sunset.getTime()) / 2;
-        const start = new Date(mid - 1.5 * 3600 * 1000);
-        const end = new Date(mid + 1.5 * 3600 * 1000);
-        return `${formatTime(start)}–${formatTime(end)}`;
-      })()
-    : "--";
 
   return (
     <Box
@@ -137,10 +80,7 @@ export default function Home() {
         pb={{ base: 8, md: 12 }}
         position="relative"
       >
-        <Grid
-          templateColumns={{ base: "1fr", md: "5.5fr .5fr 4.5fr" }}
-          w="100%"
-        >
+        <Grid templateColumns={{ base: "1fr", md: "5.5fr .5fr 4.5fr" }} w="100%">
           {/* Left hero card */}
           <GridItem colSpan={1}>
             <Box
@@ -193,81 +133,26 @@ export default function Home() {
           {/* Spacer */}
           <GridItem display={{ base: "none", md: "block" }} />
 
-          {/* Right Sun Path Card */}
+          {/* ✅ Right animated Sun Path Card */}
           <GridItem colSpan={1}>
-            <Box
-              bg="white"
-              borderRadius={cardRadius}
-              p={{ base: 6, md: 8 }}
-              boxShadow="md"
-              height="40vh"
-            >
-              <VStack align="start" spacing={5}>
-                <HStack spacing={4}>
-                  <SunIcon color="yellow.400" />
-                  <Heading size="md" color="gray.800">
-                    Sun Path {coords?.city ? `— ${coords.city}` : ""}
-                  </Heading>
-                </HStack>
-
-                <AnimatePresence mode="wait">
-                  {loadingSun ? (
-                    <motion.div
-                      key="loading"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                    >
-                      <Text color="gray.600">Loading sun data...</Text>
-                    </motion.div>
-                  ) : sunData ? (
-                    <motion.div
-                      key={coords?.city || "data"}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.6, ease: "easeOut" }}
-                    >
-                      <Progress
-                        value={currentProgress}
-                        size="lg"
-                        colorScheme="yellow"
-                        borderRadius="md"
-                        w="100%"
-                        transition="all 1s ease"
-                      />
-
-                      <SimpleGrid
-                        columns={2}
-                        spacingY={2}
-                        w="100%"
-                        color="gray.600"
-                        fontSize="sm"
-                        mt={4}
-                      >
-                        <Text>Sunrise: {formatTime(sunData.sunrise)}</Text>
-                        <Text textAlign="right">
-                          Sunset: {formatTime(sunData.sunset)}
-                        </Text>
-                        <Text colSpan={2}>Peak UV: {peakUV}</Text>
-                        <Text colSpan={2}>UV Index Max: {sunData.uvMax}</Text>
-                      </SimpleGrid>
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="empty"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                    >
-                      <Text color="gray.500" fontStyle="italic">
-                        Click "Use My Location" to load data
-                      </Text>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </VStack>
-            </Box>
+            {coords ? (
+              <SunPathCard location={coords} />
+            ) : (
+              <Box
+                bg="white"
+                borderRadius={cardRadius}
+                p={{ base: 6, md: 8 }}
+                boxShadow="md"
+                height="40vh"
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+              >
+                <Text color="gray.500" fontStyle="italic">
+                  Click "Use My Location" to load your Sun Path
+                </Text>
+              </Box>
+            )}
           </GridItem>
 
           {/* Bottom section */}

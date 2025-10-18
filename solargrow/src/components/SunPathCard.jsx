@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
   Box,
   VStack,
@@ -6,17 +6,24 @@ import {
   Heading,
   Text,
   SimpleGrid,
-  Progress,
+  Icon,
 } from "@chakra-ui/react";
-import { Sun } from "lucide-react";
+import { Sun, Moon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function SunPath({ location }) {
+export default function SunPathCard({ location }) {
   const [sunData, setSunData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [now, setNow] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 30000);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     if (!location?.latitude || !location?.longitude) return;
+
     async function fetchSunData() {
       setLoading(true);
       try {
@@ -28,41 +35,67 @@ export default function SunPath({ location }) {
         const sunset = new Date(data.daily.sunset[0]);
         const uvMax = data.daily.uv_index_max[0];
         setSunData({ sunrise, sunset, uvMax });
-      } catch (e) {
-        console.error("Sun data fetch failed:", e);
+      } catch (err) {
+        console.error("☀️ Sun data fetch failed:", err);
       } finally {
         setLoading(false);
       }
     }
+
     fetchSunData();
   }, [location]);
 
   const formatTime = (date) =>
     date?.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) || "--";
 
-  // calculate current progress through the day
-  const currentProgress =
-    sunData && sunData.sunrise && sunData.sunset
-      ? Math.min(
-          100,
-          Math.max(
-            0,
-            ((Date.now() - sunData.sunrise.getTime()) /
-              (sunData.sunset.getTime() - sunData.sunrise.getTime())) *
-              100
-          )
-        )
-      : 0;
+  const isNight =
+    sunData && (now < sunData.sunrise || now > sunData.sunset);
+  const IconComponent = isNight ? Moon : Sun;
 
-  const peakUV = sunData
-    ? (() => {
-        const mid =
-          (sunData.sunrise.getTime() + sunData.sunset.getTime()) / 2;
-        const start = new Date(mid - 1.5 * 3600 * 1000);
-        const end = new Date(mid + 1.5 * 3600 * 1000);
-        return `${formatTime(start)}–${formatTime(end)}`;
-      })()
-    : "--";
+  const uv = sunData?.uvMax || 0;
+  let uvColor = "#F6B632";
+  if (uv >= 3 && uv < 6) uvColor = "#F6AD55";
+  else if (uv >= 6 && uv < 8) uvColor = "#ED8936";
+  else if (uv >= 8) uvColor = "#E53E3E";
+
+  // Peak UV window: mid-day ±1.5 h
+  const peakStart = sunData
+    ? new Date(
+        (sunData.sunrise.getTime() + sunData.sunset.getTime()) / 2 -
+          1.5 * 3600 * 1000
+      )
+    : null;
+  const peakEnd = sunData
+    ? new Date(
+        (sunData.sunrise.getTime() + sunData.sunset.getTime()) / 2 +
+          1.5 * 3600 * 1000
+      )
+    : null;
+
+  // compute overall day progress and peak window placement (% positions)
+  const dayStart = sunData?.sunrise?.getTime() || 0;
+  const dayEnd = sunData?.sunset?.getTime() || 1;
+  const peakStartPct =
+    peakStart && dayEnd
+      ? ((peakStart.getTime() - dayStart) / (dayEnd - dayStart)) * 100
+      : 40;
+  const peakEndPct =
+    peakEnd && dayEnd
+      ? ((peakEnd.getTime() - dayStart) / (dayEnd - dayStart)) * 100
+      : 60;
+
+  const barColor = useMemo(() => {
+    if (isNight) return "#CBD5E0";
+    if (uv < 3) return "#FFF3B0";
+    if (uv < 6) return "#F6B632";
+    if (uv < 8) return "#F6AD55";
+    return "#E53E3E";
+  }, [isNight, uv]);
+
+  const peakUVLabel =
+    peakStart && peakEnd
+      ? `${formatTime(peakStart)}–${formatTime(peakEnd)}`
+      : "--";
 
   return (
     <Box
@@ -77,8 +110,7 @@ export default function SunPath({ location }) {
         <HStack spacing={4}>
           <Sun size={40} color="#F6B632" />
           <Heading size="md" color="gray.800">
-            Sun Path{" "}
-            {location?.city ? `— ${location.city}` : ""}
+            Sun Path {location?.city ? `— ${location.city}` : ""}
           </Heading>
         </HStack>
 
@@ -100,19 +132,74 @@ export default function SunPath({ location }) {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.6, ease: "easeOut" }}
             >
-              <Progress
-                value={currentProgress}
-                size="lg"
-                colorScheme="yellow"
-                borderRadius="md"
-                w="100%"
-                transition="all 1s ease"
-              />
+              {/* 🌞 Sun or Moon with breathing animation */}
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                height="120px"
+                mb={2}
+              >
+                <motion.div
+                  animate={{
+                    scale: isNight ? [1, 1.05, 1] : [1, 1.25, 1],
+                    opacity: isNight ? 0.6 : 1,
+                  }}
+                  transition={{
+                    duration: 2.5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                >
+                  <IconComponent
+                    size={65}
+                    color={barColor}
+                    style={{
+                      filter: isNight
+                        ? "drop-shadow(0 0 6px #A0AEC0)"
+                        : `drop-shadow(0 0 12px ${barColor})`,
+                    }}
+                  />
+                </motion.div>
+              </Box>
 
-              <SimpleGrid columns={2} spacingY={2} w="100%" color="gray.600" fontSize="sm" mt={4}>
+              {/* 🟡 Fixed bar with highlighted UV window */}
+              <Box
+                width="100%"
+                height="10px"
+                borderRadius="6px"
+                bg="#E2E8F0"
+                position="relative"
+                mt={2}
+                overflow="hidden"
+              >
+                {/* Highlighted UV range */}
+                <Box
+                  position="absolute"
+                  left={`${peakStartPct}%`}
+                  width={`${peakEndPct - peakStartPct}%`}
+                  height="100%"
+                  bg={barColor}
+                  borderRadius="6px"
+                  opacity={0.85}
+                  boxShadow={`0 0 10px ${barColor}`}
+                  transition="all 0.5s ease"
+                />
+              </Box>
+
+              <SimpleGrid
+                columns={2}
+                spacingY={2}
+                w="100%"
+                color="gray.600"
+                fontSize="sm"
+                mt={4}
+              >
                 <Text>Sunrise: {formatTime(sunData.sunrise)}</Text>
-                <Text textAlign="right">Sunset: {formatTime(sunData.sunset)}</Text>
-                <Text colSpan={2}>Peak UV: {peakUV}</Text>
+                <Text textAlign="right">
+                  Sunset: {formatTime(sunData.sunset)}
+                </Text>
+                <Text colSpan={2}>Peak UV: {peakUVLabel}</Text>
                 <Text colSpan={2}>UV Index Max: {sunData.uvMax}</Text>
               </SimpleGrid>
             </motion.div>
