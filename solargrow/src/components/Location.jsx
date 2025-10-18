@@ -115,9 +115,10 @@ export default function Location() {
       {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
       {locationLabel && (
         <p className="text-sm text-green-700 mt-1 font-medium">
-          📍 {locationLabel}
+          📍{locationLabel}
         </p>
       )}
+      {locationLabel}
     </div>
   );
 }

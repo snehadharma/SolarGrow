@@ -73,17 +73,19 @@ function LogIn() {
       <Flex as="main" flex="1" align="center" justify="center" px={6} position="relative" zIndex={1}>
         <Card bg="whiteAlpha.900" boxShadow="md" borderRadius="2xl" align="center" w="md" p={6}>
           <CardBody>
+            <Text
+              as="h2"
+              fontSize="24px"
+              color="green.800"
+              textAlign="center"
+              fontFamily="'Fustat', sans-serif"
+              fontWeight="700"
+              pb="20px"
+            >
+              Welcome Back! 🌿
+            </Text>
             <VStack spacing={6} align="stretch">
-              <Text
-                as="h2"
-                fontSize="24px"
-                color="green.800"
-                textAlign="center"
-                fontFamily="'Fustat', sans-serif"
-                fontWeight="700"
-              >
-                Welcome Back! 🌿
-              </Text>
+
 
               <Box
                 as="form"
