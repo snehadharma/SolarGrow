@@ -54,7 +54,7 @@ function Header() {
         </Link>
 
         {session && (
-          <Link
+          <><Link
             as={RouterLink}
             to="/dashboard"
             fontSize="18px"
@@ -63,7 +63,17 @@ function Header() {
             _hover={{ textDecoration: "none", color: "green.600" }}
           >
             Dashboard
-          </Link>
+          </Link><Link
+            as={RouterLink}
+            to="/mygarden"
+            fontSize="18px"
+            fontFamily="'Fustat', sans-serif"
+            color="green.800"
+            _hover={{ textDecoration: "none", color: "green.600" }}
+          >
+              My Garden
+            </Link></>
+          
         )}
       </HStack>
 

@@ -13,6 +13,7 @@ import { Provider } from '@chakra-ui/react/provider'
 import Account from './components/Account'
 import AddPlant from './components/AddPlant'
 import MyGardens from './components/MyGardens'
+import Background from './components/Background' 
 
 function App() {
   const [session, setSession] = useState(null)
@@ -37,6 +38,7 @@ function App() {
   return (
     <Provider theme={baseTheme}>
       <Router>
+        <Background/>
         <Header />
         <Routes>
           <Route path="/" element={<Home />} />
