@@ -15,6 +15,7 @@ import AddPlant from './components/AddPlant'
 import MyGardens from './components/MyGardens'
 import Background from './components/Background' 
 import Profile from './components/Profile'
+import PlantSpecific from "./components/PlantSpecific";
 
 function App() {
   const [session, setSession] = useState(null)
@@ -52,6 +53,7 @@ function App() {
           <Route path="/mygarden" element={<MyGardens />} />
           <Route path="/addplant" element={<AddPlant />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/plant/:plant_id" element={<PlantSpecific />} />
         </Routes>
       </Router>
     </Provider>

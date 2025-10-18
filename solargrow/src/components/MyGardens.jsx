@@ -2,11 +2,14 @@ import PlantCard from "./PlantCard";
 import { SimpleGrid, Flex, Box, Spinner, Text } from "@chakra-ui/react";
 import { supabase } from "../supabaseClient";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
 
 export default function MyGarden() {
   const [plants, setPlants] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchPlants() {
@@ -39,6 +42,8 @@ export default function MyGarden() {
         .select(
           `
           id,
+          user_id,
+          plant_conditions_id,
           nickname,
           soil_type,
           date_planted,
@@ -147,7 +152,15 @@ export default function MyGarden() {
               plant.plant_logs?.[plant.plant_logs.length - 1]?.log_date || "Never"
             }
             onLog={() => console.log("log water for", plant.nickname)}
-            onOpen={() => console.log("open plant", plant.id)}
+            onOpen={() =>
+                navigate(`/plant/${plant.id}`, {
+                    state: {
+                        plantId: plant.id, 
+                        userId: plant.user_id,
+                        conditionId: plant.plant_conditions_id,
+                    },
+                })
+            }
           />
         ))}
       </SimpleGrid>
