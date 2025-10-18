@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
+import { Link as RouterLink } from "react-router-dom";
+import { Link, Flex, HStack } from "@chakra-ui/react";
 
 function Header() {
   const [session, setSession] = useState(null)
@@ -29,36 +31,94 @@ function Header() {
   }
 
   return (
-    <header>
-      <Link to="/home">
-        CelestiGrow 🌿
-      </Link>
+    <Flex
+      as="header"
+      align="center"
+      justify="space-between"
+      py={4}
+      px={6}
+      bg="white"
+      w="100%"
+    >
+      <HStack spacing={8}>
+        <Link
+          as={RouterLink}
+          to="/home"
+          fontSize="24px"
+          fontFamily="'Fustat', sans-serif"
+          fontWeight="700"
+          color="green.800"
+          _hover={{ textDecoration: "none", color: "green.600" }}
+        >
+          SolarGrow
+        </Link>
 
-      <nav>
-        {!session ? (
-          <>
-            <Link to="/login">
-              Log In
-            </Link>
-            <Link to="/signup" >
-              Sign Up
-            </Link>
-          </>
-        ) : (
-          <>
-            <Link to="/dashboard" className="hover:underline">
-              Dashboard
-            </Link>
-            <button
-              onClick={handleLogout}
-              className="hover:underline"
-            >
-              Log Out
-            </button>
-          </>
+        {session && (
+          <Link
+            as={RouterLink}
+            to="/dashboard"
+            fontSize="18px"
+            fontFamily="'Fustat', sans-serif"
+            color="green.800"
+            _hover={{ textDecoration: "none", color: "green.600" }}
+          >
+            Dashboard
+          </Link>
         )}
-      </nav>
-    </header>
+      </HStack>
+
+      {session && (
+        <HStack spacing={6}>
+          <Link
+            as={RouterLink}
+            to="/profile"
+            fontSize="18px"
+            fontFamily="'Fustat', sans-serif"
+            color="green.800"
+            _hover={{ textDecoration: "none", color: "green.600" }}
+          >
+            Profile
+          </Link>
+
+          <Link
+            as="button"
+            onClick={handleLogout}
+            fontSize="18px"
+            fontFamily="'Fustat', sans-serif"
+            color="green.800"
+            _hover={{ textDecoration: "none", color: "green.600" }}
+          >
+            Log Out
+          </Link>
+        </HStack>
+      )}
+
+      {!session && (
+        <HStack spacing={6}>
+          <Link
+            as={RouterLink}
+            to="/login"
+            fontSize="18px"
+            fontFamily="'Fustat', sans-serif"
+            color="green.800"
+            _hover={{ textDecoration: "none", color: "green.600" }}
+          >
+            Log In
+          </Link>
+
+          <Link
+            as={RouterLink}
+            to="/signup"
+            fontSize="18px"
+            fontFamily="'Fustat', sans-serif"
+            color="green.800"
+            _hover={{ textDecoration: "none", color: "green.600" }}
+          >
+            Sign Up
+          </Link>
+        </HStack>
+      )}
+    </Flex>
   )
 }
 
