@@ -151,7 +151,12 @@ export default function Home() {
 
               ) : (
 
-                <Text color="gray.500" fontStyle="italic">
+                <Text 
+                  fontFamily="'Fustat', sans-serif"
+                  fontWeight="700"
+                  color="green.800"
+                  fontStyle="italic"
+                >
                   Click "Use My Location" to load your Sun Path
                 </Text>
 

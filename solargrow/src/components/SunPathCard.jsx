@@ -61,15 +61,15 @@ export default function SunPathCard({ location }) {
   // Peak UV window: mid-day ±1.5 h
   const peakStart = sunData
     ? new Date(
-        (sunData.sunrise.getTime() + sunData.sunset.getTime()) / 2 -
-          1.5 * 3600 * 1000
-      )
+      (sunData.sunrise.getTime() + sunData.sunset.getTime()) / 2 -
+      1.5 * 3600 * 1000
+    )
     : null;
   const peakEnd = sunData
     ? new Date(
-        (sunData.sunrise.getTime() + sunData.sunset.getTime()) / 2 +
-          1.5 * 3600 * 1000
-      )
+      (sunData.sunrise.getTime() + sunData.sunset.getTime()) / 2 +
+      1.5 * 3600 * 1000
+    )
     : null;
 
   // compute overall day progress and peak window placement (% positions)
@@ -99,10 +99,15 @@ export default function SunPathCard({ location }) {
 
   return (
     <Box>
-      <VStack align="start" spacing={5}>
+      <VStack align="start" spacing={5} 
+                align="center"
+                justify="center">
         <HStack>
           <Sun size={40} color="#F6B632" />
-          <Heading size="md" color="gray.800">
+          <Heading size="md"
+            fontFamily="'Fustat', sans-serif"
+            fontWeight="700"
+            color="green.800">
             Sun Path {location?.city ? `— ${location.city}` : ""}
           </Heading>
         </HStack>
@@ -115,7 +120,10 @@ export default function SunPathCard({ location }) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              <Text color="gray.600">Loading sun data...</Text>
+              <Text
+                fontFamily="'Fustat', sans-serif"
+                fontWeight="700"
+                color="green.600">Loading sun data...</Text>
             </motion.div>
           ) : sunData ? (
             <motion.div
@@ -186,14 +194,22 @@ export default function SunPathCard({ location }) {
                 w="100%"
                 color="gray.600"
                 fontSize="sm"
+                align="center"
+                justify="center"
                 mt={4}
               >
-                <Text>Sunrise: {formatTime(sunData.sunrise)}</Text>
-                <Text textAlign="right">
+                <Text fontFamily="'Fustat', sans-serif"
+                  fontWeight="700"
+                  color="green.800">Sunrise: {formatTime(sunData.sunrise)}</Text>
+                <Text fontFamily="'Fustat', sans-serif"
+                  fontWeight="700"
+                  color="green.800" textAlign="right">
                   Sunset: {formatTime(sunData.sunset)}
                 </Text>
-                <Text colSpan={2}>Peak UV: {peakUVLabel}</Text>
-                <Text colSpan={2}>UV Index Max: {sunData.uvMax}</Text>
+                <Text fontFamily="'Fustat', sans-serif"
+                  color="green.800" px="2x" align="left" colSpan={2}>Peak UV: {peakUVLabel}</Text>
+                <Text fontFamily="'Fustat', sans-serif"
+                  color="green.800" px="2x" align="right" colSpan={2}>UV Index Max: {sunData.uvMax}</Text>
               </SimpleGrid>
             </motion.div>
           ) : (
@@ -203,7 +219,9 @@ export default function SunPathCard({ location }) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              <Text color="gray.500" fontStyle="italic">
+              <Text fontFamily="'Fustat', sans-serif"
+                fontWeight="700"
+                color="green.800" fontStyle="italic">
                 Click "Use My Location" to load data
               </Text>
             </motion.div>
