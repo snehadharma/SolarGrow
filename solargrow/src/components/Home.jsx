@@ -34,6 +34,28 @@ function SunIcon(props) {
   );
 }
 
+// 🌤 Determine UV safety category
+function getUvLabel(value) {
+  if (value == null) return "Unknown";
+  if (value < 3) return "Low";
+  if (value < 6) return "Moderate";
+  if (value < 8) return "High";
+  if (value < 11) return "Very High";
+  return "Extreme";
+}
+
+// 🌦 Map weather condition → emoji
+function getWeatherEmoji(main) {
+  const condition = main?.toLowerCase() || "";
+  if (condition.includes("rain")) return "🌧";
+  if (condition.includes("cloud")) return "☁️";
+  if (condition.includes("clear")) return "☀️";
+  if (condition.includes("thunder")) return "⛈";
+  if (condition.includes("snow")) return "🌨";
+  if (condition.includes("mist") || condition.includes("fog")) return "🌫";
+  return "🌤";
+}
+
 export default function Home() {
   const [coords, setCoords] = useState(null);
   const [uvIndex, setUvIndex] = useState(null);
@@ -58,7 +80,7 @@ export default function Home() {
     setCoords({ latitude, longitude, city: `${city}, ${state}` });
   }
 
-  // 🌦 Fetch weather data
+  // 🌦 Fetch weather + real UV data
   useEffect(() => {
     if (!coords?.latitude || !coords?.longitude) return;
 
@@ -69,13 +91,22 @@ export default function Home() {
       try {
         const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY;
         if (!apiKey) throw new Error("Missing OpenWeather API key.");
+        const { latitude, longitude } = coords;
 
-        const currentURL = `https://api.openweathermap.org/data/2.5/weather?lat=${coords.latitude}&lon=${coords.longitude}&units=metric&appid=${apiKey}`;
+        // ✅ Real UV index from Open-Meteo (no key required)
+        const uvRes = await fetch(
+          `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=uv_index&timezone=auto`
+        );
+        const uvData = await uvRes.json();
+        const uv = uvData?.current?.uv_index ?? null;
+        setUvIndex(uv);
+
+        // 🌅 Sunrise/sunset from OpenWeather
+        const currentURL = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=imperial&appid=${apiKey}`;
         const currentRes = await fetch(currentURL);
         const current = await currentRes.json();
         if (!currentRes.ok) throw new Error(current.message || "Weather request failed");
 
-        const uv = Math.max(0, Math.min(11, Math.round(current.main.humidity / 10 + 3)));
         const sunrise = new Date(current.sys.sunrise * 1000).toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
@@ -84,10 +115,10 @@ export default function Home() {
           hour: "2-digit",
           minute: "2-digit",
         });
-        setUvIndex(uv);
         setSunTimes({ sunrise, sunset });
 
-        const forecastURL = `https://api.openweathermap.org/data/2.5/forecast?lat=${coords.latitude}&lon=${coords.longitude}&units=metric&appid=${apiKey}`;
+        // 🌤 Forecast (Fahrenheit)
+        const forecastURL = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&units=imperial&appid=${apiKey}`;
         const forecastRes = await fetch(forecastURL);
         const forecastData = await forecastRes.json();
         if (!forecastRes.ok) throw new Error(forecastData.message || "Forecast request failed");
@@ -96,21 +127,33 @@ export default function Home() {
         forecastData.list.forEach((entry) => {
           const date = new Date(entry.dt * 1000);
           const day = date.toLocaleDateString("en-US", { weekday: "short" });
-          if (!days[day]) days[day] = { temps: [], humidity: [] };
+          if (!days[day])
+            days[day] = { temps: [], humidity: [], conditions: [] };
           days[day].temps.push(entry.main.temp);
           days[day].humidity.push(entry.main.humidity);
+          days[day].conditions.push(entry.weather[0].main);
         });
 
         const forecast = Object.entries(days)
           .slice(0, 7)
-          .map(([day, vals]) => ({
-            day,
-            max: Math.round(Math.max(...vals.temps)),
-            min: Math.round(Math.min(...vals.temps)),
-            humidity: Math.round(
-              vals.humidity.reduce((a, b) => a + b, 0) / vals.humidity.length
-            ),
-          }));
+          .map(([day, vals]) => {
+            const commonCondition =
+              vals.conditions.sort(
+                (a, b) =>
+                  vals.conditions.filter((v) => v === a).length -
+                  vals.conditions.filter((v) => v === b).length
+              ).pop() || "Clear";
+
+            return {
+              day,
+              max: Math.round(Math.max(...vals.temps)),
+              min: Math.round(Math.min(...vals.temps)),
+              humidity: Math.round(
+                vals.humidity.reduce((a, b) => a + b, 0) / vals.humidity.length
+              ),
+              emoji: getWeatherEmoji(commonCondition),
+            };
+          });
 
         setWeeklyWeather(forecast);
       } catch (err) {
@@ -266,35 +309,60 @@ export default function Home() {
         </Grid>
       </Container>
 
-      {/* HOW IT WORKS SECTION */}
-      <Box w="100%" py={20} bg="#DDEADD">
-        <Container maxW="7xl" centerContent={false} px={{ base: 8, md: 14 }} mx="auto">
-          <Text fontSize="36px" fontWeight="700" color="green.800" mb={4}>
-            How it works!
-          </Text>
-          <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
-            {[
-              ["1. Input", "Location, plant type, indoor/outdoor, stage."],
-              ["2. Live data", "UV + weather + sunrise/sunset."],
-              ["3. Care plan", "Watering, sunlight tips, fertilizer, weekly summary."],
-            ].map(([title, desc]) => (
-              <motion.div key={title} whileHover={{ y: -6, transition: { duration: 0.2 } }}>
-                <Box bg="white" p={6} borderRadius={cardRadius} boxShadow="md">
-                  <Heading size="sm" mb={2}>
-                    {title}
-                  </Heading>
-                  <Divider mb={4} />
-                  <Text color="gray.600">{desc}</Text>
-                </Box>
-              </motion.div>
-            ))}
-          </SimpleGrid>
-        </Container>
-      </Box>
+      {/* ---------- INSERTED: How it works! bottom section ---------- */}
+      <Container maxW="7xl" px={{ base: 8, md: 14 }} mx="auto" pt={{ base: 2, md: 6 }}>
+        <Grid templateColumns={{ base: "1fr", md: "1fr" }} w="100%">
+          {/* Bottom section */}
+          <GridItem colSpan={{ base: 1, md: 3 }} mt={{ base: 2, md: 6 }}>
+            <Text
+              fontSize="36px"
+              fontFamily="'Fustat', sans-serif"
+              fontWeight="700"
+              color="green.800"
+              mb={4}
+            >
+              How it works!
+            </Text>
+
+            <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
+              <Box bg="white" p={6} borderRadius={cardRadius} boxShadow="md">
+                <Heading size="sm" mb={2}>
+                  1. Input
+                </Heading>
+                <Divider mb={4} />
+                <Text color="gray.600">
+                  Location, plant type, indoor/outdoor, stage.
+                </Text>
+              </Box>
+
+              <Box bg="white" p={6} borderRadius={cardRadius} boxShadow="md">
+                <Heading size="sm" mb={2}>
+                  2. Live data
+                </Heading>
+                <Divider mb={4} />
+                <Text color="gray.600">
+                  UV + weather + sunrise/sunset.
+                </Text>
+              </Box>
+
+              <Box bg="white" p={6} borderRadius={cardRadius} boxShadow="md">
+                <Heading size="sm" mb={2}>
+                  3. Care plan
+                </Heading>
+                <Divider mb={4} />
+                <Text color="gray.600">
+                  Watering, sunlight tips, fertilizer, weekly summary.
+                </Text>
+              </Box>
+            </SimpleGrid>
+          </GridItem>
+        </Grid>
+      </Container>
+      {/* ---------- end inserted section ---------- */}
 
       {/* ☀️ UV INDEX SECTION */}
       <Box ref={uvRef} w="100%" bg="white" py={20}>
-        <Container maxW="7xl" centerContent={false} px={{ base: 8, md: 14 }} mx="auto">
+        <Container maxW="7xl" px={{ base: 8, md: 14 }} mx="auto">
           <Heading size="lg" color="green.700" mb={4}>
             ☀️ Current UV Index
           </Heading>
@@ -303,16 +371,29 @@ export default function Home() {
           ) : error ? (
             <Text color="red.500">{error}</Text>
           ) : (
-            <Flex align="center" justify="center" direction="column" gap={6} bg="#F9F9F9" p={6} borderRadius={cardRadius}>
+            <Flex
+              align="center"
+              justify="center"
+              direction="column"
+              gap={6}
+              bg="#F9F9F9"
+              p={6}
+              borderRadius={cardRadius}
+            >
               <motion.div
                 animate={{ scale: [1, 1.1, 1] }}
                 transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
               >
                 <Circle size="80px" bg="#F6B632" boxShadow="0 0 30px #F6B632" />
               </motion.div>
+
               <Text fontSize="5xl" fontWeight="bold" color="#2F855A">
-                UV {uvIndex ?? "--"}
+                UV {uvIndex?.toFixed(1) ?? "--"}
               </Text>
+              <Text fontSize="xl" color="gray.600" fontWeight="600">
+                {getUvLabel(uvIndex)}
+              </Text>
+
               <Progress
                 w="80%"
                 value={(uvIndex / 11) * 100}
@@ -329,7 +410,7 @@ export default function Home() {
 
       {/* 🌦 WEEKLY WEATHER SECTION */}
       <Box ref={weatherRef} w="100%" bg="#EDF9F1" py={20}>
-        <Container maxW="7xl" centerContent={false} px={{ base: 8, md: 14 }} mx="auto">
+        <Container maxW="7xl" px={{ base: 8, md: 14 }} mx="auto">
           <Heading size="lg" color="green.700" mb={4}>
             🌦 Weekly Weather Forecast
           </Heading>
@@ -338,9 +419,17 @@ export default function Home() {
           ) : weeklyWeather.length > 0 ? (
             <HStack spacing={4} overflowX="auto">
               {weeklyWeather.map((d) => (
-                <Box key={d.day} bg="white" p={6} borderRadius="16px" boxShadow="md" minW="140px" textAlign="center">
+                <Box
+                  key={d.day}
+                  bg="white"
+                  p={6}
+                  borderRadius="16px"
+                  boxShadow="md"
+                  minW="140px"
+                  textAlign="center"
+                >
                   <Text fontWeight="bold">{d.day}</Text>
-                  <Text fontSize="3xl">☀️</Text>
+                  <Text fontSize="3xl">{d.emoji}</Text>
                   <Text>
                     {d.max}° / {d.min}°
                   </Text>
@@ -360,7 +449,7 @@ export default function Home() {
 
       {/* 🌅 SUNRISE / SUNSET SECTION */}
       <Box ref={sunriseRef} w="100%" bg="white" py={20}>
-        <Container maxW="7xl" centerContent={false} px={{ base: 8, md: 14 }} mx="auto">
+        <Container maxW="7xl" px={{ base: 8, md: 14 }} mx="auto">
           <Heading size="lg" color="green.700" mb={4}>
             🌅 Sunrise & Sunset
           </Heading>
