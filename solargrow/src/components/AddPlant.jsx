@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 import { Box, Flex, Card, CardBody, Button, VStack, FormControl, Select, FormLabel, Input, Text, Alert, AlertIcon } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-
+//sneha
 
 export default function AddPlant() {
   const [plantTypes, setPlantTypes] = useState([]);
