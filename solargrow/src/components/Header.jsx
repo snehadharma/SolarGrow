@@ -32,6 +32,7 @@ function Header() {
 
   return (
     <Flex
+      zIndex={2}
       as="header"
       align="center"
       justify="space-between"
