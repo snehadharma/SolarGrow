@@ -125,8 +125,12 @@ export default function Home() {
   }, [coords]);
 
   return (
-    <Box position="relative" bg="#DDEADD" minH="100vh" overflow="hidden">
-      {/* Background blobs */}
+    <><Box
+      position="fixed"
+      inset="0" // top:0 right:0 bottom:0 left:0
+      bg="#DDEADD"
+      zIndex={-1}
+    >      {/* Background blobs */}
       <Box
         position="absolute"
         left="-120px"
@@ -137,8 +141,7 @@ export default function Home() {
         bg="#2F855A"
         borderRadius="30%"
         opacity="30%"
-        zIndex={0}
-      />
+        zIndex={0} />
       <Box
         position="absolute"
         right="50px"
@@ -149,134 +152,151 @@ export default function Home() {
         borderRadius="50%"
         opacity="40%"
         transform="rotate(15deg)"
-        zIndex={0}
-      />
+        zIndex={0} />
+    </Box><Box
+      position="relative"
+      zIndex={0}
+      display="flex" flexDirection="column" align="center" justify="center" alignItems="center"
+      w="100%"
+      // let content decide height; remove overflow hidden so it can scroll
+      // no minH needed unless you want at least a full viewport:
+      minH="100svh"
+    >
 
-      {/* HERO SECTION */}
-      <Container
-        maxW="7xl"
-        centerContent={false}
-        px={{ base: 8, md: 14 }}
-        mx="auto"
-        pt={{ base: 8, md: 12 }}
-        pb={{ base: 8, md: 12 }}
-        position="relative"
-        zIndex={1}
-      >
-        <Grid templateColumns={{ base: "1fr", md: "5.5fr .5fr 4.5fr" }} w="100%">
-          {/* Left Card */}
-          <GridItem colSpan={1}>
-            <Box bg="white" borderRadius={cardRadius} p={{ base: 6, md: 8 }} boxShadow="md">
-              <VStack align="start" spacing={4}>
-                <Text fontSize="36px" fontWeight="700" color="green.800">
-                  Grow smarter with solar data.
-                </Text>
-                <Text color="gray.600">
-                  Personalized care plans from real-time UV, humidity and temperature.
-                </Text>
+        {/* HERO SECTION */}
+        <Container
+          maxW="7xl"
+          centerContent={false}
+          px={{ base: 8, md: 14 }}
+          mx="auto"
+          pt={{ base: 8, md: 12 }}
+          pb={{ base: 8, md: 12 }}
+          position="relative"
+          zIndex={1}
+        >
+          <Grid templateColumns={{ base: "1fr", md: "5.5fr .5fr 4.5fr" }} w="100%">
+            {/* Left Card */}
+            <GridItem colSpan={1}>
+              <Box
+                bg="white"
+                borderRadius={cardRadius}
+                p={{ base: 6, md: 8 }}
+                boxShadow="md"
+                height="40vh"
+              >                <VStack align="start" spacing={4}>
+                  <Text fontSize="36px" fontWeight="700" color="green.800">
+                    Grow smarter with solar data.
+                  </Text>
+                  <Text color="gray.600">
+                    Personalized care plans from real-time UV, humidity and temperature.
+                  </Text>
 
-                {/* Animated Buttons */}
-                <HStack spacing={3} pt={2}>
-                  <MotionButton
-                    colorScheme="green"
-                    borderRadius="full"
-                    px={6}
-                    fontWeight="600"
-                    whileHover={{
-                      scale: 1.08,
-                      boxShadow: "0px 0px 12px rgba(56,161,105,0.6)",
-                    }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    Try the Demo
-                  </MotionButton>
-
-                  <MotionButton
-                    variant="outline"
-                    colorScheme="green"
-                    borderRadius="full"
-                    px={6}
-                    fontWeight="600"
-                    whileHover={{
-                      scale: 1.08,
-                      boxShadow: "0px 0px 12px rgba(72,187,120,0.5)",
-                      backgroundColor: "rgba(72,187,120,0.05)",
-                    }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    See Features
-                  </MotionButton>
-                </HStack>
-
-                {/* Scroll Buttons */}
-                <HStack spacing={3} pt={3} wrap="wrap">
-                  {[
-                    ["☀️ Current UV", "yellow", uvRef],
-                    ["🌦 Weekly Weather", "green", weatherRef],
-                    ["🌅 Sunrise & Sunset", "orange", sunriseRef],
-                  ].map(([label, color, ref]) => (
+                  {/* Animated Buttons */}
+                  <HStack spacing={3} pt={2}>
                     <MotionButton
-                      key={label}
-                      colorScheme={color}
-                      size="sm"
+                      colorScheme="green"
                       borderRadius="full"
-                      onClick={() => scrollTo(ref)}
+                      px={6}
+                      fontWeight="600"
                       whileHover={{
-                        scale: 1.1,
-                        boxShadow: `0px 0px 10px rgba(0,0,0,0.2)`,
-                        backgroundColor: `var(--chakra-colors-${color}-300)`,
+                        scale: 1.08,
+                        boxShadow: "0px 0px 12px rgba(56,161,105,0.6)",
                       }}
                       whileTap={{ scale: 0.95 }}
                     >
-                      {label}
+                      Try the Demo
                     </MotionButton>
-                  ))}
-                </HStack>
 
-                {/* Location Button */}
+                    <MotionButton
+                      variant="outline"
+                      colorScheme="green"
+                      borderRadius="full"
+                      px={6}
+                      fontWeight="600"
+                      whileHover={{
+                        scale: 1.08,
+                        boxShadow: "0px 0px 12px rgba(72,187,120,0.5)",
+                        backgroundColor: "rgba(72,187,120,0.05)",
+                      }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      See Features
+                    </MotionButton>
+                  </HStack>
+
+                  {/* Scroll Buttons */}
+                  <HStack spacing={3} pt={3} wrap="wrap">
+                    {[
+                      ["☀️ Current UV", "yellow", uvRef],
+                      ["🌦 Weekly Weather", "green", weatherRef],
+                      ["🌅 Sunrise & Sunset", "orange", sunriseRef],
+                    ].map(([label, color, ref]) => (
+                      <MotionButton
+                        key={label}
+                        colorScheme={color}
+                        size="sm"
+                        borderRadius="full"
+                        onClick={() => scrollTo(ref)}
+                        whileHover={{
+                          scale: 1.1,
+                          boxShadow: `0px 0px 10px rgba(0,0,0,0.2)`,
+                          backgroundColor: `var(--chakra-colors-${color}-300)`,
+                        }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        {label}
+                      </MotionButton>
+                    ))}
+                  </HStack>
+                </VStack>
+              </Box>
+            </GridItem>
+
+            {/* Spacer */}
+            <GridItem display={{ base: "none", md: "block" }} />
+
+            {/* Right Card */}
+            <GridItem colSpan={1}>
+              <Box
+                bg="white"
+                borderRadius={cardRadius}
+                p={{ base: 6, md: 8 }}
+                boxShadow="md"
+                height="40vh"
+              >
+
+
                 <Location onLocationFound={handleLocation} />
-              </VStack>
-            </Box>
-          </GridItem>
+                {coords ? (
+                  <SunPathCard location={coords} />
+                ) : (
+                  <Text color="gray.500" fontStyle="italic">
+                    Click "Use My Location" to load your Sun Path
+                  </Text>
+                )}
+              </Box>
+            </GridItem>
+          </Grid>
+        </Container>
 
-          {/* Spacer */}
-          <GridItem display={{ base: "none", md: "block" }} />
-
-          {/* Right Card */}
-          <GridItem colSpan={1}>
-            <Box
-              bg="white"
-              borderRadius={cardRadius}
-              p={{ base: 6, md: 8 }}
-              boxShadow="md"
-              height="40vh"
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-            >
-              {coords ? (
-                <SunPathCard location={coords} />
-              ) : (
-                <Text color="gray.500" fontStyle="italic">
-                  Click "Use My Location" to load your Sun Path
-                </Text>
-              )}
-            </Box>
-          </GridItem>
-        </Grid>
-      </Container>
-
-      {/* HOW IT WORKS SECTION */}
-      <Box w="100%" py={20} bg="#DDEADD">
-        <Container maxW="7xl" centerContent={false} px={{ base: 8, md: 14 }} mx="auto">
-          <Text fontSize="36px" fontWeight="700" color="green.800" mb={4}>
+        {/* HOW IT WORKS SECTION */}
+        <GridItem colSpan={{ base: 1, md: 3 }} mt={{ base: 2, md: 6 }}>
+          <Text
+            fontSize="36px"
+            fontFamily="'Fustat', sans-serif"
+            fontWeight="700"
+            color="green.800"
+            align="left"
+            mb={4}
+          >
             How it works!
           </Text>
+
           <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
             {[
               ["1. Input", "Location, plant type, indoor/outdoor, stage."],
               ["2. Live data", "UV + weather + sunrise/sunset."],
-              ["3. Care plan", "Watering, sunlight tips, fertilizer, weekly summary."],
+              ["3. Care plan", "Watering, sunlight tips, daily summary."],
             ].map(([title, desc]) => (
               <motion.div key={title} whileHover={{ y: -6, transition: { duration: 0.2 } }}>
                 <Box bg="white" p={6} borderRadius={cardRadius} boxShadow="md">
@@ -289,105 +309,173 @@ export default function Home() {
               </motion.div>
             ))}
           </SimpleGrid>
-        </Container>
-      </Box>
+        </GridItem>
 
-      {/* ☀️ UV INDEX SECTION */}
-      <Box ref={uvRef} w="100%" bg="white" py={20}>
-        <Container maxW="7xl" centerContent={false} px={{ base: 8, md: 14 }} mx="auto">
-          <Heading size="lg" color="green.700" mb={4}>
-            ☀️ Current UV Index
-          </Heading>
-          {loadingData ? (
-            <Spinner size="xl" color="green.500" />
-          ) : error ? (
-            <Text color="red.500">{error}</Text>
-          ) : (
-            <Flex align="center" justify="center" direction="column" gap={6} bg="#F9F9F9" p={6} borderRadius={cardRadius}>
-              <motion.div
-                animate={{ scale: [1, 1.1, 1] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        <Divider py="150"></Divider>
+        {/* ☀️ UV INDEX SECTION */}
+        {/* ☀️ UV INDEX SECTION */}
+        <Box ref={uvRef} w="100%" py={20}>
+          <Container maxW="7xl" px={{ base: 8, md: 14 }} mx="auto">
+            <Heading size="lg" color="green.700" mb={4} fontFamily="'Fustat', sans-serif">
+              ☀️ Current UV Index
+            </Heading>
+
+            {loadingData ? (
+              <Spinner size="xl" color="green.500" />
+            ) : error ? (
+              <Text color="red.500">{error}</Text>
+            ) : (
+              <Box
+                bgGradient="linear(180deg, #EAF4EC 0%, #FFFFFF 100%)"
+                border="2px solid rgba(47,133,90,0.25)"
+                borderRadius="30px"
+                boxShadow="md"
+                p={{ base: 6, md: 8 }}
               >
-                <Circle size="80px" bg="#F6B632" boxShadow="0 0 30px #F6B632" />
-              </motion.div>
-              <Text fontSize="5xl" fontWeight="bold" color="#2F855A">
-                UV {uvIndex ?? "--"}
-              </Text>
-              <Progress
-                w="80%"
-                value={(uvIndex / 11) * 100}
-                colorScheme={
-                  uvIndex < 3 ? "green" : uvIndex < 6 ? "yellow" : uvIndex < 8 ? "orange" : "red"
-                }
-                borderRadius="full"
-                height="10px"
-              />
-            </Flex>
-          )}
-        </Container>
-      </Box>
+                <Flex direction="column" align="center" gap={6}>
+                  <motion.div
+                    animate={{ scale: [1, 1.06, 1] }}
+                    transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+                    style={{ display: "inline-block" }}
+                  >
+                    <Circle size="86px" bg="#F6B632" boxShadow="0 0 40px #F6B632" />
+                  </motion.div>
 
-      {/* 🌦 WEEKLY WEATHER SECTION */}
-      <Box ref={weatherRef} w="100%" bg="#EDF9F1" py={20}>
-        <Container maxW="7xl" centerContent={false} px={{ base: 8, md: 14 }} mx="auto">
-          <Heading size="lg" color="green.700" mb={4}>
-            🌦 Weekly Weather Forecast
-          </Heading>
-          {loadingData ? (
-            <Spinner size="xl" color="green.500" />
-          ) : weeklyWeather.length > 0 ? (
-            <HStack spacing={4} overflowX="auto">
-              {weeklyWeather.map((d) => (
-                <Box key={d.day} bg="white" p={6} borderRadius="16px" boxShadow="md" minW="140px" textAlign="center">
-                  <Text fontWeight="bold">{d.day}</Text>
-                  <Text fontSize="3xl">☀️</Text>
-                  <Text>
-                    {d.max}° / {d.min}°
+                  <Text fontSize={{ base: "4xl", md: "5xl" }} fontWeight="800" color="#2F855A" fontFamily="'Fustat', sans-serif">
+                    UV {uvIndex ?? "--"}
                   </Text>
-                  <Text color="green.600" fontSize="sm">
-                    Humidity {d.humidity}%
-                  </Text>
-                </Box>
-              ))}
-            </HStack>
-          ) : (
-            <Text color="gray.500" fontStyle="italic">
-              Waiting for location...
-            </Text>
-          )}
-        </Container>
-      </Box>
 
-      {/* 🌅 SUNRISE / SUNSET SECTION */}
-      <Box ref={sunriseRef} w="100%" bg="white" py={20}>
-        <Container maxW="7xl" centerContent={false} px={{ base: 8, md: 14 }} mx="auto">
-          <Heading size="lg" color="green.700" mb={4}>
-            🌅 Sunrise & Sunset
-          </Heading>
-          {loadingData ? (
-            <Spinner size="xl" color="orange.400" />
-          ) : (
-            <Flex align="center" justify="center" direction="column">
-              <Box position="relative" w="300px" h="150px">
-                <svg width="300" height="150">
-                  <path d="M20 130 Q150 20 280 130" stroke="#F6B632" strokeWidth="4" fill="none" />
-                </svg>
-                <motion.div
-                  style={{ position: "absolute", top: "0", left: "0" }}
-                  animate={{ x: [20, 280], y: [110, 10, 110] }}
-                  transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-                >
-                  <Circle size="40px" bg="#F6B632" boxShadow="0 0 20px #F6B632" />
-                </motion.div>
+                  <Progress
+                    w={{ base: "100%", md: "80%" }}
+                    value={Math.min(100, ((uvIndex ?? 0) / 11) * 100)}
+                    borderRadius="999px"
+                    height="12px"
+                    sx={{
+                      "> div": {
+                        background:
+                          uvIndex < 3
+                            ? "linear-gradient(90deg, #9AE6B4, #48BB78)"
+                            : uvIndex < 6
+                              ? "linear-gradient(90deg, #FBD38D, #ECC94B)"
+                              : uvIndex < 8
+                                ? "linear-gradient(90deg, #F6AD55, #DD6B20)"
+                                : "linear-gradient(90deg, #FC8181, #E53E3E)",
+                      },
+                    }}
+                  />
+                  <Text color="green.700" opacity={0.8} fontFamily="'Fustat', sans-serif">
+                    {uvIndex < 3 ? "Low" : uvIndex < 6 ? "Moderate" : uvIndex < 8 ? "High" : "Very High"}
+                  </Text>
+                </Flex>
               </Box>
-              <HStack justify="space-between" w="80%" mt={6}>
-                <Text>🌅 Sunrise {sunTimes.sunrise || "--"}</Text>
-                <Text>🌇 Sunset {sunTimes.sunset || "--"}</Text>
+            )}
+          </Container>
+        </Box>
+
+
+        <Divider py="150"></Divider>
+
+
+        {/* 🌦 WEEKLY WEATHER SECTION */}
+        {/* 🌦 WEEKLY WEATHER SECTION */}
+        <Box ref={weatherRef} w="100%" py={10}>
+          <Container maxW="7xl" px={{ base: 8, md: 14 }} mx="auto">
+            <Heading size="lg" color="green.700" mb={4} fontFamily="'Fustat', sans-serif">
+              🌦 Weekly Weather Forecast
+            </Heading>
+
+            {loadingData ? (
+              <Spinner size="xl" color="green.500" />
+            ) : weeklyWeather.length > 0 ? (
+              <HStack spacing={4} overflowX="auto" py={2} sx={{ "::-webkit-scrollbar": { height: "6px" } }}>
+                {weeklyWeather.map((d) => (
+                  <motion.div
+                    key={d.day}
+                    whileHover={{ y: -4 }}
+                    transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                    style={{ minWidth: 150 }}
+                  >
+                    <Box
+                      bgGradient="linear(180deg, #FFFFFF 0%, #EAF4EC 100%)"
+                      border="2px solid rgba(47,133,90,0.2)"
+                      borderRadius="24px"
+                      boxShadow="sm"
+                      p={5}
+                      textAlign="center"
+                    >
+                      <Text fontWeight="800" color="green.800" fontFamily="'Fustat', sans-serif">
+                        {d.day}
+                      </Text>
+                      <Box my={1} fontSize="34px">
+                        {/* swap icon by condition if you have it; using emoji for now */}
+                        {d.icon || "☀️"}
+                      </Box>
+                      <Text fontWeight="700" color="green.900" fontFamily="'Fustat', sans-serif">
+                        {d.max}° / {d.min}°
+                      </Text>
+                      <Text color="green.700" fontSize="sm" mt={1} fontFamily="'Fustat', sans-serif">
+                        Humidity {d.humidity}%
+                      </Text>
+                    </Box>
+                  </motion.div>
+                ))}
               </HStack>
-            </Flex>
-          )}
-        </Container>
-      </Box>
-    </Box>
+            ) : (
+              <Text color="gray.500" fontStyle="italic">Waiting for location...</Text>
+            )}
+          </Container>
+        </Box>
+
+
+        <Divider py="150"></Divider>
+
+        {/* 🌅 SUNRISE / SUNSET SECTION */}
+        {/* 🌅 SUNRISE / SUNSET SECTION */}
+        <Box ref={sunriseRef} w="100%" py={16}>
+          <Container maxW="7xl" px={{ base: 8, md: 14 }} mx="auto">
+            <Heading size="lg" color="green.700" mb={4} fontFamily="'Fustat', sans-serif">
+              🌅 Sunrise & Sunset
+            </Heading>
+
+            {loadingData ? (
+              <Spinner size="xl" color="orange.400" />
+            ) : (
+              <Box
+                bgGradient="linear(180deg, #FFFFFF 0%, #EAF4EC 100%)"
+                border="2px solid rgba(47,133,90,0.2)"
+                borderRadius="30px"
+                boxShadow="md"
+                p={{ base: 6, md: 8 }}
+              >
+                <Flex direction="column" align="center">
+                  <Box position="relative" w="320px" h="160px">
+                    <svg width="320" height="160">
+                      <path d="M20 140 Q160 30 300 140" stroke="#F6B632" strokeWidth="4" fill="none" />
+                    </svg>
+
+                    <motion.div
+                      style={{ position: "absolute", top: 0, left: 0 }}
+                      animate={{ x: [20, 300], y: [120, 20, 120] }}
+                      transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                    >
+                      <Circle size="42px" bg="#F6B632" boxShadow="0 0 26px #F6B632" />
+                    </motion.div>
+                  </Box>
+
+                  <HStack justify="space-between" w={{ base: "100%", md: "80%" }} mt={6}>
+                    <Text color="green.800" fontWeight="700" fontFamily="'Fustat', sans-serif">
+                      🌅 Sunrise {sunTimes.sunrise || "--"}
+                    </Text>
+                    <Text color="green.800" fontWeight="700" fontFamily="'Fustat', sans-serif">
+                      🌇 Sunset {sunTimes.sunset || "--"}
+                    </Text>
+                  </HStack>
+                </Flex>
+              </Box>
+            )}
+          </Container>
+        </Box>
+
+      </Box></>
   );
 }
