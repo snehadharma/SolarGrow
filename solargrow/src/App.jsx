@@ -12,7 +12,7 @@ import { baseTheme } from '@chakra-ui/theme'
 import { Provider } from '@chakra-ui/react/provider'
 import Account from './components/Profile'
 import AddPlant from './components/AddPlant'
-import MyGardens from './components/MyGardens'
+import MyGarden from './components/MyGarden'
 import Background from './components/Background' 
 import Profile from './components/Profile'
 import PlantSpecific from "./components/PlantSpecific";
@@ -50,7 +50,7 @@ function App() {
           <Route path="/home" element={<Home />} />
           <Route path="/account" element={<Account />} />
           <Route path="/location" element={<Location />} />
-          <Route path="/mygarden" element={<MyGardens />} />
+          <Route path="/mygarden" element={<MyGarden />} />
           <Route path="/addplant" element={<AddPlant />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/plant/:plant_id" element={<PlantSpecific />} />

@@ -58,7 +58,7 @@ export default function PlantCard({
 
         <VStack spacing={1} mt={3} px={6}>
           <Text fontSize="sm" fontFamily="'Fustat', sans-serif" fontWeight={700} color={muted}>
-            {soilType ? `${soilType} soil` : ""}
+            {soilType ? `${soilType}` : ""}
           </Text>
           <Text fontSize="xs" fontFamily="'Fustat', sans-serif" fontWeight={600} color={muted}>
             {datePlanted ? `Planted: ${datePlanted}` : ""}
