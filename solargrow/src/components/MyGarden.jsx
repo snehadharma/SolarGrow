@@ -19,6 +19,7 @@ import {
   Divider
 } from "@chakra-ui/react";
 import { supabase } from "../supabaseClient";
+import Stagger from "./Stagger"
 import { useState, useEffect } from "react";
 import AddPlant from './AddPlant'
 import { useNavigate } from "react-router-dom";
@@ -299,6 +300,7 @@ export default function MyGarden() {
         >
           + Add Plant
         </Button>
+        <Stagger>
         <Flex align="center" justify="center" alignItems="center" >
           <SimpleGrid columns={[1, 2, 3]} spacing={8} align="center">
             {plants.map((plant) => (
@@ -335,7 +337,9 @@ export default function MyGarden() {
             ))}
           </SimpleGrid>
         </Flex>
+        </Stagger>
       </Box>
+      
       <Modal
   isOpen={isOpen}
   onClose={onClose}
