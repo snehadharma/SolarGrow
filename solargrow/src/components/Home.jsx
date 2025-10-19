@@ -20,6 +20,7 @@ import {
 import { motion } from "framer-motion";
 import Location from "./Location";
 import SunPathCard from "./SunPathCard";
+import Stagger from "./Stagger";
 
 const MotionButton = motion(Button);
 
@@ -162,6 +163,7 @@ export default function Home() {
       // no minH needed unless you want at least a full viewport:
       minH="100svh"
     >
+      <Stagger>
 
         {/* HERO SECTION */}
         <Container
@@ -475,7 +477,7 @@ export default function Home() {
             )}
           </Container>
         </Box>
-
+</Stagger>
       </Box></>
   );
 }
